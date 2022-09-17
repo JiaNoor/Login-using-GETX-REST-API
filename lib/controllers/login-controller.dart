@@ -1,16 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   RxBool isObscure = true.obs;
-
-  isObscureActive() {
-    isObscure.value = !isObscure.value;
+final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+    void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
-}
-
-class SimpleUIController extends GetxController {
-  RxBool isObscure = true.obs;
-
   isObscureActive() {
     isObscure.value = !isObscure.value;
   }

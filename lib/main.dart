@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:login_api/bindings/login-bindings.dart';
 import 'package:login_api/views/login-view.dart';
-
+import 'controllers/login-controller.dart';
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
+  
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
+  final loginController = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -18,11 +20,8 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: "/login", 
             page: () => LoginView(), 
-            binding: LoginBinding()),
-        // GetPage(
-        //     name: "/signup",
-        //     page: () => DetailScreen(),
-        //     binding: DetailBinding()),
+            binding: LoginBinding()
+            ),
       ],
       initialRoute: "/login",
     );

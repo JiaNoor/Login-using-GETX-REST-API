@@ -37,6 +37,7 @@ dependencies:
   get:
   get_storage:
   lottie:
+  http:
 
 dev_dependencies:
   flutter_test:

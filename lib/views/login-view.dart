@@ -2,32 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:login_api/controllers/login-controller.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({Key? key}) : super(key: key);
+import '../services/login-service.dart';
 
-  @override
-  State<LoginView> createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+class LoginView extends GetView<LoginController> {
+  LoginView({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
+LoginController loginController = Get.find<LoginController>();
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    SimpleUIController simpleUIController = Get.put(SimpleUIController());
+    
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -36,9 +23,9 @@ class _LoginViewState extends State<LoginView> {
         body: LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth > 600) {
-              return _buildLargeScreen(size, simpleUIController);
+              return _buildLargeScreen(size, loginController);
             } else {
-              return _buildSmallScreen(size, simpleUIController);
+              return _buildSmallScreen(size, loginController);
             }
           },
         ),
@@ -49,7 +36,7 @@ class _LoginViewState extends State<LoginView> {
   /// For large screens
   Widget _buildLargeScreen(
     Size size,
-    SimpleUIController simpleUIController,
+    LoginController simpleUIController,
   ) {
     return Row(
       children: [
@@ -80,7 +67,7 @@ class _LoginViewState extends State<LoginView> {
   /// For Small screens
   Widget _buildSmallScreen(
     Size size,
-    SimpleUIController simpleUIController,
+    LoginController simpleUIController,
   ) {
     return Center(
       child: _buildMainBody(
@@ -93,7 +80,7 @@ class _LoginViewState extends State<LoginView> {
   /// Main Body
   Widget _buildMainBody(
     Size size,
-    SimpleUIController simpleUIController,
+    LoginController simpleUIController,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,7 +156,7 @@ class _LoginViewState extends State<LoginView> {
                 // ),
                 TextFormField(
                   style: TextStyle(color: Colors.black),
-                  controller: emailController,
+                  controller: simpleUIController.emailController,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.email_rounded),
                     hintText: 'Enter Your Email',
@@ -178,14 +165,14 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter gmail';
-                    } else if (!value.endsWith('@gmail.com')) {
-                      return 'please enter valid gmail';
-                    }
-                    return null;
-                  },
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return 'Please enter gmail';
+                  //   } else if (!value.endsWith('@gmail.com')) {
+                  //     return 'please enter valid gmail';
+                  //   }
+                  //   return null;
+                  // },
                 ),
                 SizedBox(
                   height: size.height * 0.02,
@@ -195,7 +182,7 @@ class _LoginViewState extends State<LoginView> {
                 Obx(
                   () => TextFormField(
                     style: TextStyle(color: Colors.black),
-                    controller: passwordController,
+                    controller: simpleUIController.passwordController,
                     obscureText: simpleUIController.isObscure.value,
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.lock_open),
@@ -218,8 +205,8 @@ class _LoginViewState extends State<LoginView> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter some text';
-                      } else if (value.length < 7) {
-                        return 'at least enter 6 characters';
+                      } else if (value.length < 5) {
+                        return 'at least enter 5 characters';
                       } else if (value.length > 13) {
                         return 'maximum character is 13';
                       }
@@ -240,7 +227,27 @@ class _LoginViewState extends State<LoginView> {
                 ),
 
                 /// Login Button
-                loginButton(),
+                SizedBox(
+      width: double.infinity,
+      height: 55,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.deepPurpleAccent),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+        onPressed: () {
+          // Validate returns true if the form is valid, or false otherwise.
+          if (_formKey.currentState!.validate()) {
+            login(simpleUIController.emailController.text.toString(), simpleUIController.passwordController.text.toString());
+          }
+        },
+        child: const Text('Login'),
+      ),
+    ),
                 SizedBox(
                   height: size.height * 0.03,
                 ),
@@ -248,10 +255,10 @@ class _LoginViewState extends State<LoginView> {
                 /// Navigate To Login Screen
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
-                    nameController.clear();
-                    emailController.clear();
-                    passwordController.clear();
+                     Get.offAndToNamed('/signup');
+                    simpleUIController.nameController.clear();
+                    simpleUIController.emailController.clear();
+                    simpleUIController.passwordController.clear();
                     _formKey.currentState?.reset();
                     simpleUIController.isObscure.value = true;
                   },
